@@ -44,7 +44,7 @@ This repository contains Kubernetes resource files to deploy a web application a
 
 - **Purpose**: Defines the WebApp Deployment and Service.
 - **Deployment**:
-  - Uses the `nanajanashia/k8s-demo-app:v1.0` image.
+  - Uses the `rohitsutar082/next-demo:latest` image.
   - Connects to MongoDB using:
     - Secrets (`mongo-secret.yaml`) for username and password.
     - ConfigMap (`mongo-config.yaml`) for the MongoDB service URL.
@@ -111,16 +111,16 @@ kubectl get pods -l app=webapp
 
 ### 6. Access the WebApp
 
-Get the Minikube Node IP:
+Create the Minikube tunnel:
 
 ```bash
-minikube ip
+minikube service webapp-service
 ```
 
 Access the WebApp in your browser using:
 
 ```
-http://<minikube-ip>:30100
+http://<tunnel-ip>:tunnel-port
 ```
 
 ### 7. Debugging and Logs
@@ -135,9 +135,3 @@ http://<minikube-ip>:30100
   ```
 
 ---
-
-## Notes
-
-- Ensure that `minikube tunnel` is running if you’re using the Docker driver on Windows.
-- Modify the `nodePort` in `webapp-service` if `30100` conflicts with another service.
-- Use the `wait-for-it.sh` script to ensure MongoDB is ready before the WebApp starts.
