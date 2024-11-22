@@ -1,0 +1,9 @@
+# Config file is used to store non sensitive data
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongo-config
+data:
+  mongo-url: mongo-service # create "mongo-service" service add link of the service
+

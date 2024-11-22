@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-deployment
+  labels:
+    app: mongo
+spec:
+  replicas: 1
+  selector: # Defines which Pods belong to this Deployment
+    matchLabels:
+      app: mongo # Ensures Pods with the label "app: mongo" are managed by this Deployment
+
+  # Template specifies the Pod configuration (metadata and container specs)
+  template:
+    metadata:
+      labels: # Labels for the Pods created by this Deployment
+        app: mongo
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:5.0 # MongoDB container image with version 5.0
+          ports:
+            - containerPort: 27017 # Exposes MongoDB's default port inside the container
+          env:
+            # Sets the MongoDB root username using a secret reference
+            - name: MONGODB_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret # Name of the secret where the username is stored
+                  key: mongo-user # Key in the secret that stores the username value
+
+            # Sets the MongoDB root password using a secret reference
+            - name: MONGODB_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret # Name of the secret where the password is stored
+                  key: mongo-password # Key in the secret that stores the password value
+
+---
+# Service configuration for exposing the MongoDB Pods
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-service
+spec:
+  selector:
+    app: mongo # Ensures this Service routes traffic to Pods with the label "app: mongo"
+  ports:
+    - protocol: TCP
+      port: 27017 # Port on which the Service is exposed to other components
+      targetPort: 27017 # Maps to the MongoDB container's exposed port

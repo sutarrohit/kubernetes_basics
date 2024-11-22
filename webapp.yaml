@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+  labels:
+    app: webapp
+spec:
+  replicas: 1
+  selector: # Defines which Pods belong to this Deployment
+    matchLabels:
+      app: webapp # Ensures Pods with the label "app: webapp" are managed by this Deployment
+
+  # Template specifies the Pod configuration (metadata and container specs)
+  template:
+    metadata:
+      labels: # Labels for the Pods created by this Deployment
+        app: webapp
+    spec:
+      containers:
+        - name: webapp
+          image: rohitsutar082/next-demo:latest # webapp container image with version 1.0
+          ports:
+            - containerPort: 3000 # Exposes webapp's default port inside the container
+          env:
+            # Sets the MongoDB root username using a secret reference
+            - name: USER_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret # Name of the secret where the username is stored
+                  key: mongo-user # Key in the secret that stores the username value
+
+            # Sets the MongoDB root password using a secret reference
+            - name: USER_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret # Name of the secret where the password is stored
+                  key: mongo-password # Key in the secret that stores the password value
+
+            - name: DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: mongo-config # Name of the ConfigMap that stores the database URL
+                  key: mongo-url # Key in the ConfigMap containing the MongoDB service URL
+
+---
+# Service configuration for exposing the webapp Pods
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-service
+spec:
+  type: NodePort # Exposes the service on a static port on each Node's IP address, allowing external traffic to access the service
+  selector:
+    app: webapp # Ensures this Service routes traffic to Pods with the label "app: webapp"
+  ports:
+    - protocol: TCP
+      port: 3000 # Port on which the Service is exposed to other components
+      targetPort: 3000 # Maps to the webapp container's exposed port
+      nodePort: 30100
