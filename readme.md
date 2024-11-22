@@ -1,7 +1,3 @@
-Here’s a **README.md** file that explains all your Kubernetes resource files and provides instructions on how to deploy and verify them:
-
----
-
 # Kubernetes Deployment for WebApp and MongoDB
 
 This repository contains Kubernetes resource files to deploy a web application and a MongoDB database. The web application connects to MongoDB using secrets and configuration stored in Kubernetes.
@@ -145,7 +141,3 @@ http://<minikube-ip>:30100
 - Ensure that `minikube tunnel` is running if you’re using the Docker driver on Windows.
 - Modify the `nodePort` in `webapp-service` if `30100` conflicts with another service.
 - Use the `wait-for-it.sh` script to ensure MongoDB is ready before the WebApp starts.
-
----
-
-This README provides a comprehensive guide to deploy and run your Kubernetes setup. Let me know if you need further clarification!
